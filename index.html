@@ -1,0 +1,3375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EasyDial V10</title>
+<meta name="theme-color" content="#1670ff">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="EasyDial">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#eef4ff;color:#14234d}
+#app{max-width:430px;margin:auto;min-height:100vh;background:white;padding-bottom:75px}
+.screen{display:none}
+.screen.show{display:block}
+
+header{padding:18px;border-bottom:1px solid #edf0f5;background:white}
+.logo{font-size:27px;font-weight:bold}
+.logo span{color:#1670ff}
+.subtitle{font-size:12px;color:#718096;margin-top:4px}
+
+.flex{display:flex;gap:8px;align-items:center}
+button{font-family:inherit;cursor:pointer}
+
+.pill{
+border:0;border-radius:20px;padding:9px 14px;
+background:#edf2fa;color:#24355f
+}
+
+.selected,.activeSend{
+background:#1670ff!important;color:white!important
+}
+
+.search{
+width:100%;border:0;background:#f2f5f9;
+padding:14px;border-radius:15px;margin-top:14px;font-size:15px
+}
+
+.filters{
+display:flex;gap:7px;margin-top:11px;overflow-x:auto
+}
+
+.taskMainButton{position:relative}
+
+.taskCount{
+position:absolute;top:-7px;right:-5px;
+background:#ff4757;color:white;
+font-size:10px;min-width:19px;height:19px;
+padding:0 5px;border-radius:12px;
+display:flex;align-items:center;justify-content:center
+}
+
+.contact{
+display:flex;align-items:center;padding:15px 17px;
+border-bottom:1px solid #edf0f5;cursor:pointer
+}
+
+.avatar{
+width:47px;height:47px;border-radius:50%;
+background:#dce9ff;display:flex;align-items:center;
+justify-content:center;font-weight:bold;
+margin-right:12px;flex-shrink:0
+}
+
+.contactText{flex:1;min-width:0}
+.name{font-weight:bold;font-size:15px}
+
+.preview{
+font-size:12px;color:#718096;margin-top:5px;
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+
+.badge{
+background:#1670ff;color:white;font-size:11px;
+min-width:22px;height:22px;border-radius:12px;
+display:flex;align-items:center;justify-content:center
+}
+
+.back{
+border:0;background:none;font-size:28px;padding:0 5px
+}
+
+.channels,.sendChannels{
+display:flex;gap:7px;overflow-x:auto
+}
+
+.channels{
+padding:12px;border-bottom:1px solid #edf0f5
+}
+
+.channel,.sendChannel{
+border:0;background:#edf2fa;border-radius:16px;
+padding:9px 12px;white-space:nowrap
+}
+
+.message{
+margin:12px 15px;max-width:82%;
+background:#f0f2f5;padding:12px 14px;border-radius:18px
+}
+
+.message.me{
+margin-left:auto;background:#eaf2ff
+}
+
+.message.whatsapp{border-left:5px solid #25D366}
+.message.sms{border-left:5px solid #4AA3FF}
+.message.messenger{border-left:5px solid #168AFF}
+.message.instagram{border-left:5px solid #C13584}
+.message.email{border-left:5px solid #D94A4A}
+.message.appel{border-left:5px solid #7C4DFF}
+
+.source{
+font-size:10px;font-weight:bold;margin-top:7px
+}
+
+.source.whatsapp{color:#159447}
+.source.sms{color:#247fd4}
+.source.messenger{color:#0875dc}
+.source.instagram{color:#C13584}
+.source.email{color:#c33d3d}
+.source.appel{color:#6941d9}
+
+.time{
+font-size:9px;color:#9aa4b5;margin-top:3px
+}
+
+.sendVia{
+margin:12px;padding:12px;background:#f6f8fc;border-radius:16px
+}
+
+.sendViaTitle{
+font-size:11px;color:#718096;margin-bottom:8px
+}
+
+.emailFields{
+display:none;margin:10px 12px
+}
+
+.emailFields input{
+width:100%;border:0;background:#f1f4f8;
+padding:12px;border-radius:13px
+}
+
+.attachArea{margin:8px 12px}
+
+.attachButton{
+border:0;background:#edf2fa;padding:10px 13px;border-radius:14px
+}
+
+.attachMenu{
+display:none;background:white;
+box-shadow:0 4px 20px #0002;
+border-radius:15px;padding:8px;margin-top:7px
+}
+
+.attachMenu button{
+display:block;width:100%;border:0;background:white;
+text-align:left;padding:12px;border-radius:10px
+}
+
+.pendingAttachment{
+display:none;background:#eef4ff;
+padding:10px;border-radius:12px;
+margin-top:7px;font-size:12px
+}
+
+.composer{
+display:flex;gap:7px;padding:5px 12px 12px
+}
+
+.composer input{
+flex:1;border:0;background:#f1f4f8;
+border-radius:18px;padding:13px;min-width:0
+}
+
+.send,.blueButton{
+border:0;background:#1670ff;color:white;
+border-radius:17px;padding:11px 15px
+}
+
+.card{
+background:#f6f8fc;margin:14px;
+padding:16px;border-radius:18px
+}
+
+.action{
+display:block;width:100%;border:0;background:white;
+padding:14px;border-radius:13px;margin-top:9px;
+text-align:left;font-weight:bold
+}
+
+.status{
+font-size:12px;background:#e9f7ef;color:#177245;
+padding:9px 10px;border-radius:10px;margin-top:10px
+}
+
+.warning{
+font-size:12px;background:#fff5df;color:#875b00;
+padding:9px 10px;border-radius:10px;margin-top:10px
+}
+
+.photoPreview{
+width:100%;max-height:230px;
+object-fit:cover;border-radius:13px;margin-top:9px
+}
+
+.videoPreview{
+width:100%;max-height:250px;
+border-radius:13px;margin-top:9px;background:#000
+}
+
+.fileCard{
+display:flex;align-items:center;gap:11px;
+background:white;padding:11px;
+border-radius:13px;margin-top:9px
+}
+
+.fileIcon{
+font-size:28px;width:38px;text-align:center
+}
+
+.fileInfo{flex:1;min-width:0}
+
+.fileName{
+font-size:12px;font-weight:bold;
+overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+
+.fileType{
+font-size:10px;color:#718096;margin-top:3px
+}
+
+.heicCard{background:#f8f5ff}
+
+.toast{
+position:fixed;top:15px;left:50%;
+transform:translateX(-50%);
+width:calc(100% - 30px);max-width:400px;
+background:#14234d;color:white;
+padding:14px;border-radius:16px;
+box-shadow:0 5px 25px #0004;
+z-index:100;display:none
+}
+
+.toastTitle{
+font-weight:bold;font-size:14px
+}
+
+.toastText{
+font-size:12px;margin-top:5px;opacity:.9
+}
+
+.simulator{
+background:#14234d;color:white;
+margin:14px;padding:16px;border-radius:20px
+}
+
+.simulator select,.simulator input{
+width:100%;border:0;padding:12px;
+border-radius:12px;margin-top:8px
+}
+
+.simulator button{
+width:100%;border:0;background:#1670ff;
+color:white;padding:12px;border-radius:13px;
+margin-top:10px;font-weight:bold
+}
+
+/* V10 MEMORY */
+
+.memoryInfo{
+margin:14px;
+background:#e9f7ef;
+color:#177245;
+padding:12px 14px;
+border-radius:15px;
+font-size:12px
+}
+
+/* TASKS */
+
+.taskTabs{
+display:flex;gap:7px;padding:12px;
+overflow-x:auto;border-bottom:1px solid #edf0f5
+}
+
+.taskTab{
+border:0;background:#edf2fa;
+padding:9px 12px;border-radius:15px;
+white-space:nowrap
+}
+
+.taskCard{
+background:#f6f8fc;
+margin:12px 14px;
+padding:15px;border-radius:18px
+}
+
+.taskTop{
+display:flex;justify-content:space-between;
+gap:10px;align-items:flex-start
+}
+
+.taskPerson{
+font-weight:bold;font-size:15px
+}
+
+.taskLabel{
+font-size:12px;color:#718096;margin-top:5px
+}
+
+.taskStatus{
+display:inline-block;margin-top:12px;
+font-size:11px;padding:7px 10px;
+border-radius:12px;font-weight:bold
+}
+
+.todoReply{background:#e9f2ff;color:#1764c0}
+.todoCall{background:#f2eaff;color:#7145b7}
+.todoQuote{background:#fff0df;color:#a55b00}
+.todoWaiting{background:#fff7d6;color:#7d6800}
+.todoDone{background:#e7f7ed;color:#177245}
+
+.taskSelect{
+width:100%;margin-top:12px;border:0;
+background:white;padding:11px;border-radius:12px
+}
+
+.taskButtons{
+display:flex;gap:8px;margin-top:10px
+}
+
+.taskButtons button{
+flex:1;border:0;padding:11px 7px;border-radius:12px
+}
+
+.openButton{
+background:#1670ff;color:white
+}
+
+.doneButton{
+background:#e7f7ed;color:#177245
+}
+
+.reopenButton{
+background:#edf2fa;color:#24355f
+}
+
+.emptyState{
+text-align:center;padding:45px 25px;color:#718096
+}
+
+.emptyIcon{
+font-size:42px;margin-bottom:12px
+}
+
+.mediaChannel{
+font-size:10px;color:#718096;margin-top:8px
+}
+
+#replyBox,#assistantStatus{
+display:none
+}
+
+nav{
+position:fixed;bottom:0;left:50%;
+transform:translateX(-50%);
+max-width:430px;width:100%;
+height:66px;display:flex;
+background:white;border-top:1px solid #ddd;
+z-index:10
+}
+
+nav button{
+flex:1;border:0;background:white;
+font-size:12px;color:#354263
+}
+
+nav strong{
+display:block;font-size:20px;margin-bottom:3px
+}
+
+.navTask{position:relative}
+
+.navCount{
+position:absolute;top:5px;left:55%;
+background:#ff4757;color:white;
+min-width:18px;height:18px;
+padding:0 5px;font-size:9px;
+border-radius:10px;
+display:flex;align-items:center;justify-content:center
+}
+
+input[type=file]{display:none}
+
+</style>
+</head>
+
+<body>
+
+<div id="toast" class="toast">
+<div id="toastTitle" class="toastTitle"></div>
+<div id="toastText" class="toastText"></div>
+</div>
+
+<div id="app">
+
+<!-- CONTACTS -->
+
+<div id="contactsScreen" class="screen show">
+
+<header>
+
+<div class="logo">Easy<span>Dial</span></div>
+<div class="subtitle">Une personne. Une conversation.</div>
+
+<div class="flex" style="margin-top:14px">
+
+<button id="persoButton"
+class="pill"
+onclick="chooseMode('perso')">
+Perso
+</button>
+
+<button id="proButton"
+class="pill selected"
+onclick="chooseMode('pro')">
+Pro
+</button>
+
+</div>
+
+<input
+id="search"
+class="search"
+placeholder="Rechercher personne, message ou document..."
+onkeyup="renderContacts()">
+
+<div class="filters">
+
+<button
+id="allFilter"
+class="pill selected"
+onclick="showAll()">
+Tous
+</button>
+
+<button
+id="unreadFilter"
+class="pill"
+onclick="showUnread()">
+Non lus
+</button>
+
+<button
+class="pill taskMainButton"
+onclick="openTasks()">
+
+À traiter
+
+<span
+id="homeTaskCount"
+class="taskCount">
+0
+</span>
+
+</button>
+
+</div>
+
+</header>
+
+<div class="memoryInfo">
+💾 V10 • Les messages et tâches sont mémorisés sur cet appareil.
+</div>
+
+<div id="contactList"></div>
+
+<div class="simulator">
+
+<strong>🧪 Simuler un message entrant</strong>
+
+<div
+class="subtitle"
+style="color:#b9c7e8">
+
+EasyDial identifie le contact, le canal et la demande.
+
+</div>
+
+<select id="incomingContact">
+
+<option>Sophie Martin</option>
+<option>Thomas Dubois</option>
+<option>Julie Bernard</option>
+<option>Alexandre Petit</option>
+<option>Laura Moreau</option>
+<option>Marc Lefèvre</option>
+
+</select>
+
+<select id="incomingChannel">
+
+<option>WhatsApp</option>
+<option>SMS</option>
+<option>Messenger</option>
+<option>Instagram</option>
+<option>Email</option>
+
+</select>
+
+<input
+id="incomingText"
+value="Bonjour, vous pouvez me faire un devis ?">
+
+<button onclick="simulateIncoming()">
+🔔 Recevoir le message
+</button>
+
+</div>
+
+</div>
+
+
+<!-- CHAT -->
+
+<div id="chatScreen" class="screen">
+
+<header>
+
+<div class="flex">
+
+<button
+class="back"
+onclick="openContacts()">
+‹
+</button>
+
+<div
+class="avatar"
+id="chatAvatar">
+SM
+</div>
+
+<div>
+
+<div
+class="name"
+id="chatName">
+Sophie Martin
+</div>
+
+<div class="subtitle">
+Tous ses échanges, au même endroit
+</div>
+
+</div>
+
+</div>
+
+</header>
+
+<div class="channels">
+
+<button
+id="channelTous"
+class="channel selected"
+onclick="filterChannel('Tous')">
+Tous
+</button>
+
+<button
+id="channelWhatsApp"
+class="channel"
+onclick="filterChannel('WhatsApp')">
+🟢 WhatsApp
+</button>
+
+<button
+id="channelSMS"
+class="channel"
+onclick="filterChannel('SMS')">
+💬 SMS
+</button>
+
+<button
+id="channelMessenger"
+class="channel"
+onclick="filterChannel('Messenger')">
+🔵 Messenger
+</button>
+
+<button
+id="channelInstagram"
+class="channel"
+onclick="filterChannel('Instagram')">
+📸 Instagram
+</button>
+
+<button
+id="channelEmail"
+class="channel"
+onclick="filterChannel('Email')">
+📧 E-mail
+</button>
+
+<button
+id="channelAppel"
+class="channel"
+onclick="filterChannel('Appel')">
+📞 Appels
+</button>
+
+</div>
+
+<div id="messageList"></div>
+
+
+<div class="sendVia">
+
+<div class="sendViaTitle">
+Répondre via
+</div>
+
+<div class="sendChannels">
+
+<button
+id="sendWhatsApp"
+class="sendChannel activeSend"
+onclick="chooseSendChannel('WhatsApp')">
+🟢 WhatsApp
+</button>
+
+<button
+id="sendSMS"
+class="sendChannel"
+onclick="chooseSendChannel('SMS')">
+💬 SMS
+</button>
+
+<button
+id="sendMessenger"
+class="sendChannel"
+onclick="chooseSendChannel('Messenger')">
+🔵 Messenger
+</button>
+
+<button
+id="sendInstagram"
+class="sendChannel"
+onclick="chooseSendChannel('Instagram')">
+📸 Instagram
+</button>
+
+<button
+id="sendEmail"
+class="sendChannel"
+onclick="chooseSendChannel('Email')">
+📧 E-mail
+</button>
+
+</div>
+
+</div>
+
+
+<div
+id="emailFields"
+class="emailFields">
+
+<input
+id="emailSubject"
+placeholder="Objet de l'e-mail">
+
+</div>
+
+
+<div class="attachArea">
+
+<button
+class="attachButton"
+onclick="toggleAttachMenu()">
+📎 Ajouter
+</button>
+
+<div
+id="attachMenu"
+class="attachMenu">
+
+<button onclick="chooseAttachment('photo')">
+📷 Photo / HEIC
+</button>
+
+<button onclick="chooseAttachment('video')">
+🎥 Vidéo
+</button>
+
+<button onclick="chooseAttachment('document')">
+📄 Document / PDF
+</button>
+
+<button onclick="addLocation()">
+📍 Localisation
+</button>
+
+<button onclick="addContactCard()">
+👤 Contact
+</button>
+
+</div>
+
+<div
+id="pendingAttachment"
+class="pendingAttachment">
+</div>
+
+</div>
+
+
+<input
+type="file"
+id="photoInput"
+accept="image/*,.heic,.heif"
+onchange="fileSelected(this,'photo')">
+
+<input
+type="file"
+id="videoInput"
+accept="video/*"
+onchange="fileSelected(this,'video')">
+
+<input
+type="file"
+id="documentInput"
+accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip"
+onchange="fileSelected(this,'document')">
+
+
+<div class="composer">
+
+<input
+id="newMessage"
+placeholder="Écrire une réponse...">
+
+<button
+class="send"
+onclick="sendMessage()">
+Envoyer
+</button>
+
+</div>
+
+
+<div class="card">
+
+<button
+class="action"
+onclick="openProfile()">
+👤 Fiche complète
+</button>
+
+<button
+class="action"
+onclick="openMedia()">
+🖼️ Médias & documents
+</button>
+
+<button
+class="action"
+onclick="openAssistant()">
+✨ Assistant Pro
+</button>
+
+</div>
+
+</div>
+
+
+<!-- PROFILE -->
+
+<div
+id="profileScreen"
+class="screen">
+
+<header>
+
+<div class="flex">
+
+<button
+class="back"
+onclick="openChat()">
+‹
+</button>
+
+<div>
+
+<div class="logo">
+Fiche <span>contact</span>
+</div>
+
+<div class="subtitle">
+Une identité, tous les canaux
+</div>
+
+</div>
+
+</div>
+
+</header>
+
+<div
+id="profileData"
+class="card">
+</div>
+
+<button
+class="blueButton"
+style="margin:0 14px"
+onclick="openMedia()">
+🖼️ Médias & documents
+</button>
+
+</div>
+
+
+<!-- MEDIA -->
+
+<div
+id="mediaScreen"
+class="screen">
+
+<header>
+
+<div class="flex">
+
+<button
+class="back"
+onclick="openChat()">
+‹
+</button>
+
+<div>
+
+<div class="logo">
+Médias <span>& documents</span>
+</div>
+
+<div
+class="subtitle"
+id="mediaSubtitle">
+</div>
+
+</div>
+
+</div>
+
+</header>
+
+<div id="mediaList"></div>
+
+</div>
+
+
+<!-- TASKS -->
+
+<div
+id="tasksScreen"
+class="screen">
+
+<header>
+
+<div class="logo">
+À <span>traiter</span>
+</div>
+
+<div class="subtitle">
+Votre centre de travail EasyDial
+</div>
+
+</header>
+
+
+<div class="taskTabs">
+
+<button
+id="taskActive"
+class="taskTab selected"
+onclick="setTaskFilter('active')">
+À faire
+</button>
+
+<button
+id="taskReply"
+class="taskTab"
+onclick="setTaskFilter('À répondre')">
+💬 Répondre
+</button>
+
+<button
+id="taskCall"
+class="taskTab"
+onclick="setTaskFilter('À rappeler')">
+📞 Rappeler
+</button>
+
+<button
+id="taskQuote"
+class="taskTab"
+onclick="setTaskFilter('Devis à faire')">
+🧾 Devis
+</button>
+
+<button
+id="taskWaiting"
+class="taskTab"
+onclick="setTaskFilter('En attente client')">
+⏳ Attente
+</button>
+
+<button
+id="taskDone"
+class="taskTab"
+onclick="setTaskFilter('Terminé')">
+✅ Terminés
+</button>
+
+</div>
+
+<div id="taskList"></div>
+
+</div>
+
+
+<!-- ASSISTANT -->
+
+<div
+id="assistantScreen"
+class="screen">
+
+<header>
+
+<div class="logo">
+Assistant <span>Pro</span>
+</div>
+
+<div class="subtitle">
+Il rassemble et prépare. Vous décidez.
+</div>
+
+</header>
+
+
+<div class="card">
+
+<strong id="assistantTitle">
+✨ Résumé
+</strong>
+
+<p id="assistantSummary"></p>
+
+<div class="status">
+Informations regroupées depuis l'historique EasyDial.
+</div>
+
+</div>
+
+
+<div class="card">
+
+<button
+class="action"
+onclick="prepareReply()">
+✍️ Préparer une réponse
+</button>
+
+<button
+class="action"
+onclick="createFollowUp()">
+📋 Créer une fiche de suivi
+</button>
+
+<button
+class="action"
+onclick="returnToSelected()">
+🔎 Voir tous les échanges
+</button>
+
+<button
+class="action"
+onclick="markCallback()">
+📞 Marquer à rappeler
+</button>
+
+</div>
+
+
+<div
+id="replyBox"
+class="card">
+
+<strong>
+Réponse proposée
+</strong>
+
+<p id="replyText"></p>
+
+<button
+class="blueButton"
+onclick="useReply()">
+Modifier / envoyer moi-même
+</button>
+
+</div>
+
+<div
+id="assistantStatus"
+class="card">
+</div>
+
+</div>
+
+
+<nav>
+
+<button onclick="openContacts()">
+
+<strong>👥</strong>
+Contacts
+
+</button>
+
+
+<button
+class="navTask"
+onclick="openTasks()">
+
+<strong>☑️</strong>
+À traiter
+
+<span
+id="navTaskCount"
+class="navCount">
+0
+</span>
+
+</button>
+
+
+<button onclick="openAssistant()">
+
+<strong>🤖</strong>
+Assistant
+
+</button>
+
+</nav>
+
+</div>
+
+
+<script>
+
+/* =========================
+   EASYDIAL V10
+   LOCAL MEMORY
+========================= */
+
+var STORAGE_KEY="easydial_v10_data";
+
+
+/* =========================
+   DEFAULT DATA
+========================= */
+
+var contacts=[
+
+{
+name:"Sophie Martin",
+phone:"06 12 34 56 78",
+email:"sophie@example.com",
+unread:2,
+task:"Devis à faire",
+taskDone:false,
+summary:"Sophie souhaite un devis. Elle préfère jeudi et a envoyé ses dimensions.",
+reply:"Bonjour Sophie, j'ai bien reçu votre demande. Je vérifie les éléments et je reviens vers vous.",
+messages:[
+
+{
+channel:"WhatsApp",
+text:"Bonjour, avez-vous des disponibilités la semaine prochaine ?",
+me:false,
+time:"Lun. 09:14"
+},
+
+{
+channel:"SMS",
+text:"Oui, vous préférez mardi ou jeudi ?",
+me:true,
+time:"Lun. 09:22"
+},
+
+{
+channel:"Messenger",
+text:"Jeudi serait parfait !",
+me:false,
+time:"Lun. 10:03"
+},
+
+{
+channel:"Email",
+text:"Voici les dimensions.",
+me:false,
+time:"Lun. 11:47",
+attachment:{
+type:"document",
+name:"Dimensions_Sophie.pdf",
+extension:"pdf"
+}
+},
+
+{
+channel:"WhatsApp",
+text:"Je vous joins aussi une photo.",
+me:false,
+time:"Lun. 12:03",
+attachment:{
+type:"photo",
+name:"IMG_4821.HEIC",
+extension:"heic",
+heic:true
+}
+}
+
+]
+},
+
+
+{
+name:"Thomas Dubois",
+phone:"06 22 44 66 88",
+email:"thomas@example.com",
+unread:0,
+task:"À rappeler",
+taskDone:false,
+summary:"Thomas souhaite être rappelé.",
+reply:"Bonjour Thomas, j'ai vu votre message. Je reviens vers vous dès que possible.",
+messages:[
+
+{
+channel:"Appel",
+text:"Appel manqué.",
+me:false,
+time:"Hier 15:42"
+},
+
+{
+channel:"SMS",
+text:"Rappelle-moi quand tu peux.",
+me:false,
+time:"Hier 15:44"
+}
+
+]
+},
+
+
+{
+name:"Julie Bernard",
+phone:"06 31 52 73 94",
+email:"julie@example.com",
+unread:1,
+task:"À répondre",
+taskDone:false,
+summary:"Julie attend une confirmation.",
+reply:"Bonjour Julie, je vous confirme le créneau dès que possible.",
+messages:[
+
+{
+channel:"Instagram",
+text:"Bonjour, je peux passer demain ?",
+me:false,
+time:"Mar. 18:11"
+},
+
+{
+channel:"WhatsApp",
+text:"Je vérifie.",
+me:true,
+time:"Mar. 18:30"
+}
+
+]
+},
+
+
+{
+name:"Alexandre Petit",
+phone:"06 41 61 81 01",
+email:"alex@example.com",
+unread:0,
+task:"",
+taskDone:false,
+summary:"Alexandre a reçu son devis.",
+reply:"Bonjour Alexandre, n'hésitez pas si vous avez une question.",
+messages:[
+
+{
+channel:"Email",
+text:"Voici votre devis.",
+me:true,
+time:"12 sept. 14:10",
+attachment:{
+type:"document",
+name:"Devis_Alexandre.pdf",
+extension:"pdf"
+}
+},
+
+{
+channel:"WhatsApp",
+text:"Bien reçu, merci.",
+me:false,
+time:"12 sept. 15:26"
+}
+
+]
+},
+
+
+{
+name:"Laura Moreau",
+phone:"06 55 44 33 22",
+email:"laura@example.com",
+unread:0,
+task:"Terminé",
+taskDone:true,
+summary:"Laura a validé la proposition.",
+reply:"Merci Laura, c'est bien noté 👍",
+messages:[
+
+{
+channel:"Messenger",
+text:"Je vous envoie les photos.",
+me:false,
+time:"25 sept. 10:12"
+},
+
+{
+channel:"WhatsApp",
+text:"Ok pour moi 👍",
+me:false,
+time:"25 sept. 12:03"
+}
+
+]
+},
+
+
+{
+name:"Marc Lefèvre",
+phone:"06 66 55 44 33",
+email:"marc@example.com",
+unread:1,
+task:"Devis à faire",
+taskDone:false,
+summary:"Marc demande un tarif.",
+reply:"Bonjour Marc, merci. Je regarde votre demande et je prépare le tarif.",
+messages:[
+
+{
+channel:"Instagram",
+text:"Bonjour, vous faites combien ?",
+me:false,
+time:"Aujourd'hui 10:04"
+},
+
+{
+channel:"Email",
+text:"Voici les dimensions.",
+me:false,
+time:"Aujourd'hui 10:39"
+}
+
+]
+}
+
+];
+
+
+/* =========================
+   MEMORY
+========================= */
+
+function loadEasyDialData(){
+
+var saved=localStorage.getItem(STORAGE_KEY);
+
+if(saved){
+
+try{
+
+var restored=JSON.parse(saved);
+
+if(restored && restored.length){
+contacts=restored;
+}
+
+}catch(e){
+
+console.log("EasyDial : récupération impossible");
+
+}
+
+}
+
+}
+
+
+function saveEasyDialData(){
+
+try{
+
+/*
+On retire les URL temporaires blob:
+car elles ne survivent pas à une fermeture.
+*/
+
+var cleanContacts=JSON.parse(JSON.stringify(contacts));
+
+for(var i=0;i<cleanContacts.length;i++){
+
+for(var j=0;j<cleanContacts[i].messages.length;j++){
+
+var att=cleanContacts[i].messages[j].attachment;
+
+if(att && att.url && att.url.indexOf("blob:")===0){
+delete att.url;
+}
+
+}
+
+}
+
+localStorage.setItem(
+STORAGE_KEY,
+JSON.stringify(cleanContacts)
+);
+
+}catch(e){
+
+console.log("EasyDial : sauvegarde impossible");
+
+}
+
+}
+
+
+/* =========================
+   STATE
+========================= */
+
+loadEasyDialData();
+
+var selectedContact=contacts[0];
+
+var unreadOnly=false;
+
+var selectedChannel="Tous";
+
+var sendChannel="WhatsApp";
+
+var pendingAttachment=null;
+
+var taskFilter="active";
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function hideScreens(){
+
+var screens=document.getElementsByClassName("screen");
+
+for(var i=0;i<screens.length;i++){
+
+screens[i].classList.remove("show");
+
+}
+
+}
+
+
+function openContacts(){
+
+hideScreens();
+
+document
+.getElementById("contactsScreen")
+.classList.add("show");
+
+renderContacts();
+
+updateTaskCounters();
+
+}
+
+
+function openChat(){
+
+hideScreens();
+
+document
+.getElementById("chatScreen")
+.classList.add("show");
+
+renderMessages();
+
+}
+
+
+function chooseMode(mode){
+
+document
+.getElementById("persoButton")
+.classList.toggle(
+"selected",
+mode==="perso"
+);
+
+document
+.getElementById("proButton")
+.classList.toggle(
+"selected",
+mode==="pro"
+);
+
+}
+
+
+/* =========================
+   TASK COUNTER
+========================= */
+
+function countActiveTasks(){
+
+var total=0;
+
+for(var i=0;i<contacts.length;i++){
+
+if(
+contacts[i].task!=="" &&
+contacts[i].task!=="Terminé" &&
+!contacts[i].taskDone
+){
+
+total++;
+
+}
+
+}
+
+return total;
+
+}
+
+
+function updateTaskCounters(){
+
+var count=countActiveTasks();
+
+var home=document.getElementById("homeTaskCount");
+
+var nav=document.getElementById("navTaskCount");
+
+home.innerHTML=count;
+
+nav.innerHTML=count;
+
+home.style.display=
+count>0 ? "flex" : "none";
+
+nav.style.display=
+count>0 ? "flex" : "none";
+
+}
+
+
+/* =========================
+   CONTACTS
+========================= */
+
+function getPreview(person){
+
+var m=
+person.messages[
+person.messages.length-1
+];
+
+return m.channel+" • "+m.text;
+
+}
+
+
+function renderContacts(){
+
+var query=
+document
+.getElementById("search")
+.value
+.toLowerCase();
+
+var html="";
+
+for(var i=0;i<contacts.length;i++){
+
+var p=contacts[i];
+
+var searchable=
+p.name+" "+
+p.email+" "+
+p.phone+" "+
+p.task;
+
+for(var x=0;x<p.messages.length;x++){
+
+searchable+=" "+p.messages[x].text;
+
+if(p.messages[x].attachment){
+
+searchable+=
+" "+
+p.messages[x].attachment.name;
+
+}
+
+}
+
+if(
+unreadOnly &&
+p.unread===0
+){
+continue;
+}
+
+if(
+searchable
+.toLowerCase()
+.indexOf(query)===-1
+){
+continue;
+}
+
+var parts=p.name.split(" ");
+
+var initials="";
+
+for(var j=0;j<parts.length;j++){
+
+initials+=
+parts[j].charAt(0);
+
+}
+
+html+=
+"<div class='contact' onclick=\"selectContact('"+
+p.name+
+"')\">";
+
+html+=
+"<div class='avatar'>"+
+initials+
+"</div>";
+
+html+=
+"<div class='contactText'>";
+
+html+=
+"<div class='name'>"+
+p.name+
+"</div>";
+
+html+=
+"<div class='preview'>"+
+getPreview(p)+
+"</div>";
+
+html+="</div>";
+
+if(p.unread>0){
+
+html+=
+"<div class='badge'>"+
+p.unread+
+"</div>";
+
+}
+
+html+="</div>";
+
+}
+
+document
+.getElementById("contactList")
+.innerHTML=html;
+
+updateTaskCounters();
+
+}
+
+
+function selectContact(name){
+
+for(var i=0;i<contacts.length;i++){
+
+if(contacts[i].name===name){
+
+selectedContact=contacts[i];
+
+break;
+
+}
+
+}
+
+selectedContact.unread=0;
+
+/* V10 remembers that messages were read */
+
+saveEasyDialData();
+
+var parts=
+selectedContact.name.split(" ");
+
+var initials="";
+
+for(var j=0;j<parts.length;j++){
+
+initials+=
+parts[j].charAt(0);
+
+}
+
+document
+.getElementById("chatAvatar")
+.innerHTML=initials;
+
+document
+.getElementById("chatName")
+.innerHTML=
+selectedContact.name;
+
+selectedChannel="Tous";
+
+chooseSendChannel("WhatsApp");
+
+updateChannelButtons();
+
+openChat();
+
+}
+
+
+function showAll(){
+
+unreadOnly=false;
+
+document
+.getElementById("allFilter")
+.classList.add("selected");
+
+document
+.getElementById("unreadFilter")
+.classList.remove("selected");
+
+renderContacts();
+
+}
+
+
+function showUnread(){
+
+unreadOnly=true;
+
+document
+.getElementById("unreadFilter")
+.classList.add("selected");
+
+document
+.getElementById("allFilter")
+.classList.remove("selected");
+
+renderContacts();
+
+}
+
+
+/* =========================
+   INCOMING MESSAGE
+========================= */
+
+function simulateIncoming(){
+
+var name=
+document
+.getElementById("incomingContact")
+.value;
+
+var channel=
+document
+.getElementById("incomingChannel")
+.value;
+
+var text=
+document
+.getElementById("incomingText")
+.value
+.trim();
+
+if(text===""){
+return;
+}
+
+var person=null;
+
+for(var i=0;i<contacts.length;i++){
+
+if(contacts[i].name===name){
+
+person=contacts[i];
+
+break;
+
+}
+
+}
+
+if(!person){
+return;
+}
+
+person.messages.push({
+
+channel:channel,
+
+text:text,
+
+me:false,
+
+time:"À l'instant"
+
+});
+
+person.unread++;
+
+var lower=
+text.toLowerCase();
+
+var detectedTask="";
+
+
+if(
+lower.indexOf("devis")!==-1 ||
+lower.indexOf("tarif")!==-1 ||
+lower.indexOf("prix")!==-1
+){
+
+detectedTask="Devis à faire";
+
+}
+
+else if(
+lower.indexOf("rappeler")!==-1 ||
+lower.indexOf("rappelle")!==-1 ||
+lower.indexOf("appelez")!==-1
+){
+
+detectedTask="À rappeler";
+
+}
+
+else if(
+lower.indexOf("disponible")!==-1 ||
+lower.indexOf("disponibilité")!==-1 ||
+lower.indexOf("rendez-vous")!==-1 ||
+lower.indexOf("rdv")!==-1
+){
+
+detectedTask="À répondre";
+
+}
+
+else{
+
+detectedTask="À répondre";
+
+}
+
+
+person.task=
+detectedTask;
+
+person.taskDone=false;
+
+person.summary=
+"Nouveau message reçu via "+
+channel+
+". EasyDial l'a classé : "+
+detectedTask+
+".";
+
+
+/* V10 SAVE */
+
+saveEasyDialData();
+
+
+showToast(
+
+"🔔 "+person.name,
+
+getChannelIcon(channel)+
+" "+
+channel+
+" • "+
+text
+
+);
+
+
+renderContacts();
+
+updateTaskCounters();
+
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+function showToast(title,text){
+
+document
+.getElementById("toastTitle")
+.innerHTML=title;
+
+document
+.getElementById("toastText")
+.innerHTML=text;
+
+var toast=
+document
+.getElementById("toast");
+
+toast.style.display="block";
+
+setTimeout(function(){
+
+toast.style.display="none";
+
+},3500);
+
+}
+
+
+/* =========================
+   CHANNEL FILTER
+========================= */
+
+function filterChannel(channel){
+
+selectedChannel=channel;
+
+updateChannelButtons();
+
+renderMessages();
+
+}
+
+
+function updateChannelButtons(){
+
+var names=[
+"Tous",
+"WhatsApp",
+"SMS",
+"Messenger",
+"Instagram",
+"Email",
+"Appel"
+];
+
+for(var i=0;i<names.length;i++){
+
+var button=
+document.getElementById(
+"channel"+names[i]
+);
+
+if(button){
+
+button.classList.toggle(
+"selected",
+names[i]===selectedChannel
+);
+
+}
+
+}
+
+}
+
+
+function getChannelIcon(channel){
+
+if(channel==="WhatsApp") return "🟢";
+
+if(channel==="SMS") return "💬";
+
+if(channel==="Messenger") return "🔵";
+
+if(channel==="Instagram") return "📸";
+
+if(channel==="Email") return "📧";
+
+if(channel==="Appel") return "📞";
+
+return "💬";
+
+}
+
+
+/* =========================
+   FILES
+========================= */
+
+function getExtension(name){
+
+if(!name){
+return "";
+}
+
+var parts=
+name
+.toLowerCase()
+.split(".");
+
+if(parts.length<2){
+return "";
+}
+
+return parts[
+parts.length-1
+];
+
+}
+
+
+function fileIcon(ext){
+
+if(ext==="pdf") return "📕";
+
+if(
+ext==="doc" ||
+ext==="docx"
+) return "📘";
+
+if(
+ext==="xls" ||
+ext==="xlsx"
+) return "📗";
+
+if(
+ext==="heic" ||
+ext==="heif"
+) return "📸";
+
+return "📄";
+
+}
+
+
+function getAttachmentHTML(att){
+
+if(!att){
+return "";
+}
+
+var ext=
+att.extension ||
+getExtension(att.name);
+
+
+/* PHOTO */
+
+if(att.type==="photo"){
+
+if(
+ext==="heic" ||
+ext==="heif" ||
+att.heic
+){
+
+return
+
+"<div class='fileCard heicCard'>"+
+
+"<div class='fileIcon'>📸</div>"+
+
+"<div class='fileInfo'>"+
+
+"<div class='fileName'>"+
+att.name+
+"</div>"+
+
+"<div class='fileType'>"+
+"Photo HEIC • original conservé"+
+"</div>"+
+
+"</div>"+
+
+"</div>";
+
+}
+
+if(att.url){
+
+return
+
+"<img class='photoPreview' src='"+
+att.url+
+"'>";
+
+}
+
+/*
+Après rechargement, un fichier local
+n'a plus son blob URL.
+On garde cependant sa trace.
+*/
+
+return
+
+"<div class='fileCard'>"+
+
+"<div class='fileIcon'>🖼️</div>"+
+
+"<div class='fileInfo'>"+
+
+"<div class='fileName'>"+
+att.name+
+"</div>"+
+
+"<div class='fileType'>"+
+"Photo enregistrée dans l'historique"+
+"</div>"+
+
+"</div>"+
+
+"</div>";
+
+}
+
+
+/* VIDEO */
+
+if(att.type==="video"){
+
+if(att.url){
+
+return
+
+"<video class='videoPreview' controls src='"+
+att.url+
+"'></video>";
+
+}
+
+return
+
+"<div class='fileCard'>"+
+
+"<div class='fileIcon'>🎥</div>"+
+
+"<div class='fileInfo'>"+
+
+"<div class='fileName'>"+
+att.name+
+"</div>"+
+
+"<div class='fileType'>"+
+"Vidéo enregistrée dans l'historique"+
+"</div>"+
+
+"</div>"+
+
+"</div>";
+
+}
+
+
+/* DOCUMENT */
+
+if(att.type==="document"){
+
+return
+
+"<div class='fileCard'>"+
+
+"<div class='fileIcon'>"+
+fileIcon(ext)+
+"</div>"+
+
+"<div class='fileInfo'>"+
+
+"<div class='fileName'>"+
+att.name+
+"</div>"+
+
+"<div class='fileType'>"+
+ext.toUpperCase()+
+" • Document"+
+"</div>"+
+
+"</div>"+
+
+"</div>";
+
+}
+
+
+/* LOCATION */
+
+if(att.type==="location"){
+
+return
+
+"<div class='fileCard'>"+
+
+"<div class='fileIcon'>📍</div>"+
+
+"<div class='fileInfo'>"+
+
+"<div class='fileName'>"+
+att.name+
+"</div>"+
+
+"<div class='fileType'>Localisation</div>"+
+
+"</div>"+
+
+"</div>";
+
+}
+
+
+/* CONTACT */
+
+if(att.type==="contact"){
+
+return
+
+"<div class='fileCard'>"+
+
+"<div class='fileIcon'>👤</div>"+
+
+"<div class='fileInfo'>"+
+
+"<div class='fileName'>"+
+att.name+
+"</div>"+
+
+"<div class='fileType'>Contact</div>"+
+
+"</div>"+
+
+"</div>";
+
+}
+
+return "";
+
+}
+
+
+/* =========================
+   MESSAGE DISPLAY
+========================= */
+
+function renderMessages(){
+
+var html="";
+
+for(
+var i=0;
+i<selectedContact.messages.length;
+i++
+){
+
+var m=
+selectedContact.messages[i];
+
+if(
+selectedChannel!=="Tous" &&
+m.channel!==selectedChannel
+){
+continue;
+}
+
+var cls=
+m.channel.toLowerCase();
+
+html+=
+"<div class='message "+
+(m.me ? "me " : "")+
+cls+
+"'>";
+
+html+=m.text;
+
+html+=
+getAttachmentHTML(
+m.attachment
+);
+
+html+=
+"<div class='source "+
+cls+
+"'>"+
+getChannelIcon(m.channel)+
+" "+
+m.channel+
+"</div>";
+
+html+=
+"<div class='time'>"+
+m.time+
+"</div>";
+
+html+="</div>";
+
+}
+
+document
+.getElementById("messageList")
+.innerHTML=html;
+
+}
+
+
+/* =========================
+   SEND CHANNEL
+========================= */
+
+function chooseSendChannel(channel){
+
+sendChannel=channel;
+
+var channels=[
+"WhatsApp",
+"SMS",
+"Messenger",
+"Instagram",
+"Email"
+];
+
+for(var i=0;i<channels.length;i++){
+
+var b=
+document.getElementById(
+"send"+channels[i]
+);
+
+if(b){
+
+b.classList.toggle(
+"activeSend",
+channels[i]===channel
+);
+
+}
+
+}
+
+document
+.getElementById("emailFields")
+.style.display=
+channel==="Email"
+?
+"block"
+:
+"none";
+
+}
+
+
+/* =========================
+   ATTACHMENTS
+========================= */
+
+function toggleAttachMenu(){
+
+var m=
+document
+.getElementById("attachMenu");
+
+m.style.display=
+m.style.display==="block"
+?
+"none"
+:
+"block";
+
+}
+
+
+function chooseAttachment(type){
+
+document
+.getElementById("attachMenu")
+.style.display="none";
+
+if(type==="photo"){
+
+document
+.getElementById("photoInput")
+.click();
+
+}
+
+if(type==="video"){
+
+document
+.getElementById("videoInput")
+.click();
+
+}
+
+if(type==="document"){
+
+document
+.getElementById("documentInput")
+.click();
+
+}
+
+}
+
+
+function fileSelected(input,type){
+
+if(
+!input.files ||
+input.files.length===0
+){
+return;
+}
+
+var file=input.files[0];
+
+var ext=
+getExtension(file.name);
+
+pendingAttachment={
+
+type:type,
+
+name:file.name,
+
+extension:ext
+
+};
+
+
+if(
+ext==="heic" ||
+ext==="heif"
+){
+
+pendingAttachment.heic=true;
+
+}
+
+
+if(
+type==="photo" &&
+ext!=="heic" &&
+ext!=="heif"
+){
+
+pendingAttachment.url=
+URL.createObjectURL(file);
+
+}
+
+
+if(type==="video"){
+
+pendingAttachment.url=
+URL.createObjectURL(file);
+
+}
+
+
+showPendingAttachment();
+
+input.value="";
+
+}
+
+
+function addLocation(){
+
+pendingAttachment={
+
+type:"location",
+
+name:"Ma position"
+
+};
+
+document
+.getElementById("attachMenu")
+.style.display="none";
+
+showPendingAttachment();
+
+}
+
+
+function addContactCard(){
+
+pendingAttachment={
+
+type:"contact",
+
+name:"Fiche contact"
+
+};
+
+document
+.getElementById("attachMenu")
+.style.display="none";
+
+showPendingAttachment();
+
+}
+
+
+function showPendingAttachment(){
+
+var box=
+document
+.getElementById(
+"pendingAttachment"
+);
+
+box.style.display="block";
+
+box.innerHTML=
+"📎 "+
+pendingAttachment.name+
+" &nbsp; "+
+"<button onclick='removeAttachment()'>✕</button>";
+
+}
+
+
+function removeAttachment(){
+
+pendingAttachment=null;
+
+document
+.getElementById(
+"pendingAttachment"
+)
+.style.display="none";
+
+}
+
+
+/* =========================
+   SEND MESSAGE
+========================= */
+
+function sendMessage(){
+
+var input=
+document
+.getElementById(
+"newMessage"
+);
+
+var text=
+input.value.trim();
+
+if(
+text==="" &&
+pendingAttachment===null
+){
+return;
+}
+
+if(text===""){
+
+text="Pièce jointe";
+
+}
+
+
+if(sendChannel==="Email"){
+
+var subject=
+document
+.getElementById(
+"emailSubject"
+)
+.value
+.trim();
+
+if(subject!==""){
+
+text=
+"<strong>Objet : "+
+subject+
+"</strong><br><br>"+
+text;
+
+}
+
+}
+
+
+selectedContact.messages.push({
+
+channel:sendChannel,
+
+text:text,
+
+me:true,
+
+time:"À l'instant",
+
+attachment:pendingAttachment
+
+});
+
+
+/* V10 SAVE */
+
+saveEasyDialData();
+
+
+input.value="";
+
+document
+.getElementById("emailSubject")
+.value="";
+
+pendingAttachment=null;
+
+document
+.getElementById(
+"pendingAttachment"
+)
+.style.display="none";
+
+selectedChannel="Tous";
+
+updateChannelButtons();
+
+renderMessages();
+
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+function openProfile(){
+
+document
+.getElementById("profileData")
+.innerHTML=
+
+"<h2>"+
+selectedContact.name+
+"</h2>"+
+
+"<p>📞 "+
+selectedContact.phone+
+"</p>"+
+
+"<p>📧 "+
+selectedContact.email+
+"</p>"+
+
+"<p><strong>"+
+selectedContact.messages.length+
+"</strong> échanges regroupés</p>"+
+
+(
+selectedContact.task!=="" &&
+!selectedContact.taskDone
+
+?
+
+"<div class='warning'>"+
+"☑️ À traiter : "+
+selectedContact.task+
+"</div>"
+
+:
+
+"<div class='status'>"+
+"✓ Aucun élément urgent"+
+"</div>"
+
+);
+
+hideScreens();
+
+document
+.getElementById("profileScreen")
+.classList.add("show");
+
+}
+
+
+/* =========================
+   MEDIA
+========================= */
+
+function openMedia(){
+
+hideScreens();
+
+document
+.getElementById("mediaScreen")
+.classList.add("show");
+
+document
+.getElementById("mediaSubtitle")
+.innerHTML=
+selectedContact.name;
+
+renderMedia();
+
+}
+
+
+function renderMedia(){
+
+var html="";
+
+var count=0;
+
+for(
+var i=0;
+i<selectedContact.messages.length;
+i++
+){
+
+var m=
+selectedContact.messages[i];
+
+if(!m.attachment){
+continue;
+}
+
+count++;
+
+html+=
+"<div class='card'>";
+
+html+=
+getAttachmentHTML(
+m.attachment
+);
+
+html+=
+"<div class='mediaChannel'>"+
+getChannelIcon(m.channel)+
+" "+
+m.channel+
+" • "+
+m.time+
+"</div>";
+
+html+="</div>";
+
+}
+
+
+if(count===0){
+
+html=
+"<div class='card'>"+
+"Aucun média ou document."+
+"</div>";
+
+}
+
+document
+.getElementById("mediaList")
+.innerHTML=html;
+
+}
+
+
+/* =========================
+   TASK CENTER
+========================= */
+
+function openTasks(){
+
+hideScreens();
+
+document
+.getElementById("tasksScreen")
+.classList.add("show");
+
+renderTasks();
+
+updateTaskCounters();
+
+}
+
+
+function setTaskFilter(filter){
+
+taskFilter=filter;
+
+var ids=[
+
+"taskActive",
+
+"taskReply",
+
+"taskCall",
+
+"taskQuote",
+
+"taskWaiting",
+
+"taskDone"
+
+];
+
+for(var i=0;i<ids.length;i++){
+
+document
+.getElementById(ids[i])
+.classList.remove("selected");
+
+}
+
+
+if(filter==="active"){
+
+document
+.getElementById("taskActive")
+.classList.add("selected");
+
+}
+
+if(filter==="À répondre"){
+
+document
+.getElementById("taskReply")
+.classList.add("selected");
+
+}
+
+if(filter==="À rappeler"){
+
+document
+.getElementById("taskCall")
+.classList.add("selected");
+
+}
+
+if(filter==="Devis à faire"){
+
+document
+.getElementById("taskQuote")
+.classList.add("selected");
+
+}
+
+if(filter==="En attente client"){
+
+document
+.getElementById("taskWaiting")
+.classList.add("selected");
+
+}
+
+if(filter==="Terminé"){
+
+document
+.getElementById("taskDone")
+.classList.add("selected");
+
+}
+
+renderTasks();
+
+}
+
+
+function getTaskClass(task){
+
+if(task==="À répondre"){
+return "todoReply";
+}
+
+if(task==="À rappeler"){
+return "todoCall";
+}
+
+if(task==="Devis à faire"){
+return "todoQuote";
+}
+
+if(task==="En attente client"){
+return "todoWaiting";
+}
+
+if(task==="Terminé"){
+return "todoDone";
+}
+
+return "todoReply";
+
+}
+
+
+function getTaskIcon(task){
+
+if(task==="À répondre"){
+return "💬";
+}
+
+if(task==="À rappeler"){
+return "📞";
+}
+
+if(task==="Devis à faire"){
+return "🧾";
+}
+
+if(task==="En attente client"){
+return "⏳";
+}
+
+if(task==="Terminé"){
+return "✅";
+}
+
+return "☑️";
+
+}
+
+
+function renderTasks(){
+
+var html="";
+
+var found=0;
+
+for(var i=0;i<contacts.length;i++){
+
+var p=contacts[i];
+
+if(p.task===""){
+continue;
+}
+
+
+if(taskFilter==="active"){
+
+if(
+p.task==="Terminé" ||
+p.taskDone
+){
+continue;
+}
+
+}else{
+
+if(p.task!==taskFilter){
+continue;
+}
+
+}
+
+
+found++;
+
+html+=
+"<div class='taskCard'>";
+
+html+=
+"<div class='taskTop'>";
+
+html+="<div>";
+
+html+=
+"<div class='taskPerson'>"+
+p.name+
+"</div>";
+
+html+=
+"<div class='taskLabel'>"+
+getPreview(p)+
+"</div>";
+
+html+="</div>";
+
+
+if(p.unread>0){
+
+html+=
+"<div class='badge'>"+
+p.unread+
+"</div>";
+
+}
+
+html+="</div>";
+
+
+html+=
+"<div class='taskStatus "+
+getTaskClass(p.task)+
+"'>"+
+getTaskIcon(p.task)+
+" "+
+p.task+
+"</div>";
+
+
+if(p.task!=="Terminé"){
+
+html+=
+"<select class='taskSelect' onchange=\"changeTaskStatus('"+
+p.name+
+"',this.value)\">";
+
+
+html+=
+"<option value='À répondre' "+
+(
+p.task==="À répondre"
+?
+"selected"
+:
+""
+)+
+">💬 À répondre</option>";
+
+
+html+=
+"<option value='À rappeler' "+
+(
+p.task==="À rappeler"
+?
+"selected"
+:
+""
+)+
+">📞 À rappeler</option>";
+
+
+html+=
+"<option value='Devis à faire' "+
+(
+p.task==="Devis à faire"
+?
+"selected"
+:
+""
+)+
+">🧾 Devis à faire</option>";
+
+
+html+=
+"<option value='En attente client' "+
+(
+p.task==="En attente client"
+?
+"selected"
+:
+""
+)+
+">⏳ En attente client</option>";
+
+
+html+="</select>";
+
+}
+
+
+html+="<div class='taskButtons'>";
+
+
+html+=
+"<button class='openButton' onclick=\"taskOpenChat('"+
+p.name+
+"')\">Ouvrir</button>";
+
+
+if(p.task!=="Terminé"){
+
+html+=
+"<button class='doneButton' onclick=\"completeTask('"+
+p.name+
+"')\">✓ Terminé</button>";
+
+}else{
+
+html+=
+"<button class='reopenButton' onclick=\"reopenTask('"+
+p.name+
+"')\">↩ Réouvrir</button>";
+
+}
+
+html+="</div>";
+
+html+="</div>";
+
+}
+
+
+if(found===0){
+
+html=
+
+"<div class='emptyState'>"+
+
+"<div class='emptyIcon'>✨</div>"+
+
+"<strong>Rien ici</strong>"+
+
+"<div style='margin-top:7px'>"+
+"EasyDial n'a rien à vous signaler."+
+"</div>"+
+
+"</div>";
+
+}
+
+
+document
+.getElementById("taskList")
+.innerHTML=html;
+
+}
+
+
+function changeTaskStatus(name,status){
+
+var p=
+findContact(name);
+
+if(!p){
+return;
+}
+
+p.task=status;
+
+p.taskDone=
+status==="Terminé";
+
+
+/* V10 SAVE */
+
+saveEasyDialData();
+
+
+renderTasks();
+
+updateTaskCounters();
+
+
+showToast(
+
+"☑️ "+p.name,
+
+"Statut : "+status
+
+);
+
+}
+
+
+function completeTask(name){
+
+var p=
+findContact(name);
+
+if(!p){
+return;
+}
+
+p.task="Terminé";
+
+p.taskDone=true;
+
+
+/* V10 SAVE */
+
+saveEasyDialData();
+
+
+renderTasks();
+
+updateTaskCounters();
+
+
+showToast(
+
+"✅ Terminé",
+
+p.name+
+" retiré des tâches actives."
+
+);
+
+}
+
+
+function reopenTask(name){
+
+var p=
+findContact(name);
+
+if(!p){
+return;
+}
+
+p.task="À répondre";
+
+p.taskDone=false;
+
+
+/* V10 SAVE */
+
+saveEasyDialData();
+
+
+renderTasks();
+
+updateTaskCounters();
+
+
+showToast(
+
+"↩ Tâche réouverte",
+
+p.name+
+" repasse dans À traiter."
+
+);
+
+}
+
+
+function taskOpenChat(name){
+
+var p=
+findContact(name);
+
+if(!p){
+return;
+}
+
+selectedContact=p;
+
+selectContact(name);
+
+}
+
+
+function findContact(name){
+
+for(var i=0;i<contacts.length;i++){
+
+if(contacts[i].name===name){
+
+return contacts[i];
+
+}
+
+}
+
+return null;
+
+}
+
+
+/* =========================
+   ASSISTANT
+========================= */
+
+function openAssistant(){
+
+hideScreens();
+
+document
+.getElementById("assistantScreen")
+.classList.add("show");
+
+document
+.getElementById("assistantTitle")
+.innerHTML=
+"✨ Résumé de "+
+selectedContact.name;
+
+document
+.getElementById("assistantSummary")
+.innerHTML=
+selectedContact.summary;
+
+document
+.getElementById("replyText")
+.innerHTML=
+selectedContact.reply;
+
+document
+.getElementById("replyBox")
+.style.display="none";
+
+document
+.getElementById("assistantStatus")
+.style.display="none";
+
+}
+
+
+function prepareReply(){
+
+document
+.getElementById("replyBox")
+.style.display="block";
+
+}
+
+
+function createFollowUp(){
+
+if(
+selectedContact.task==="" ||
+selectedContact.task==="Terminé"
+){
+
+selectedContact.task=
+"À répondre";
+
+selectedContact.taskDone=false;
+
+}
+
+
+/* V10 SAVE */
+
+saveEasyDialData();
+
+
+var box=
+document
+.getElementById(
+"assistantStatus"
+);
+
+box.style.display="block";
+
+box.innerHTML=
+"✅ Fiche de suivi créée pour "+
+selectedContact.name+
+".";
+
+updateTaskCounters();
+
+}
+
+
+function markCallback(){
+
+selectedContact.task=
+"À rappeler";
+
+selectedContact.taskDone=false;
+
+
+/* V10 SAVE */
+
+saveEasyDialData();
+
+
+var box=
+document
+.getElementById(
+"assistantStatus"
+);
+
+box.style.display="block";
+
+box.innerHTML=
+"📞 "+
+selectedContact.name+
+" ajouté dans À rappeler.";
+
+updateTaskCounters();
+
+}
+
+
+function returnToSelected(){
+
+selectContact(
+selectedContact.name
+);
+
+}
+
+
+function useReply(){
+
+var reply=
+selectedContact.reply;
+
+selectContact(
+selectedContact.name
+);
+
+document
+.getElementById("newMessage")
+.value=reply;
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+renderContacts();
+
+updateTaskCounters();
+
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register("./service-worker.js")
+      .then(function() {
+        console.log("EasyDial PWA active");
+      })
+      .catch(function(err) {
+        console.log("Service worker erreur", err);
+      });
+  });
+}
+</script>
+</body>
+</html>
