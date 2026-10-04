@@ -79,13 +79,20 @@ function edPanel(){
        "\nNotes : "+d.notes.length+"\nÀ traiter : "+d.tasks.filter(x=>!x.done).length+
        "\n\nLes données restent sur ce téléphone.");
 }
+
+</script>
+
+
+<script>
 window.addEventListener("load",()=>{
- const bar=document.createElement("div");
- bar.id="ed-v5-tools";
- bar.innerHTML='<button onclick="edAddContact()">＋ Contact</button><button onclick="edAddNote()">＋ Note</button><button onclick="edAddTask()">＋ À traiter</button><button onclick="edSearch()">⌕ Local</button><button onclick="edPanel()">V5</button>';
- Object.assign(bar.style,{position:"fixed",left:"50%",transform:"translateX(-50%)",bottom:"74px",zIndex:"9999",display:"flex",gap:"5px",padding:"7px",borderRadius:"16px",background:"rgba(255,255,255,.96)",boxShadow:"0 5px 22px rgba(0,0,0,.18)",maxWidth:"96vw",overflowX:"auto"});
- [...bar.querySelectorAll("button")].forEach(b=>Object.assign(b.style,{border:"0",borderRadius:"11px",padding:"9px 10px",fontWeight:"700",whiteSpace:"nowrap",background:"#eef4ff",color:"#14234d"}));
- document.body.appendChild(bar);
+  const host=document.querySelector("header") || document.querySelector("#app") || document.body;
+  if(!host || document.getElementById("ed-v5-menu")) return;
+  const box=document.createElement("div");
+  box.id="ed-v5-menu";
+  box.innerHTML='<button onclick="edAddContact()">＋ Contact</button><button onclick="edAddNote()">＋ Note</button><button onclick="edAddTask()">＋ À traiter</button><button onclick="edSearch()">⌕ Recherche</button>';
+  Object.assign(box.style,{display:"flex",gap:"6px",overflowX:"auto",padding:"8px 12px",background:"#fff"});
+  [...box.querySelectorAll("button")].forEach(b=>Object.assign(b.style,{border:"0",borderRadius:"10px",padding:"8px 10px",fontWeight:"700",whiteSpace:"nowrap",background:"#eef4ff",color:"#14234d"}));
+  if(host.tagName==="HEADER") host.insertAdjacentElement("afterend",box); else host.insertAdjacentElement("afterbegin",box);
 });
 </script>
 
