@@ -41,4 +41,52 @@ if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.se
 if(!localStorage.getItem("easydial_seen_intro")){
  setTimeout(()=>{alert("Bienvenue sur EasyDial 👋\n\nLe principe : une personne = un seul fil, même si elle te contacte par plusieurs canaux.\n\nTeste la recherche avec « devis », ouvre Jean Dupont, puis regarde « À traiter ».");localStorage.setItem("easydial_seen_intro","1")},350);
 }
-</script></body></html>
+</script>
+<script>
+/* EasyDial V5 local engine */
+const EDKEY="easydial_v5_local";
+function edLoad(){try{return JSON.parse(localStorage.getItem(EDKEY))||{contacts:[],notes:[],tasks:[]}}catch(e){return {contacts:[],notes:[],tasks:[]}}}
+function edSave(d){localStorage.setItem(EDKEY,JSON.stringify(d))}
+function edAddContact(){
+ const name=prompt("Nom du contact :"); if(!name)return;
+ const phone=prompt("Téléphone (facultatif) :")||"";
+ const email=prompt("E-mail (facultatif) :")||"";
+ const d=edLoad(); d.contacts.push({id:Date.now(),name,phone,email,created:new Date().toISOString()}); edSave(d);
+ alert(name+" a été enregistré sur ce téléphone.");
+}
+function edAddNote(){
+ const who=prompt("Contact / client :"); if(!who)return;
+ const note=prompt("Note :"); if(!note)return;
+ const d=edLoad(); d.notes.push({id:Date.now(),who,note,created:new Date().toISOString()}); edSave(d);
+ alert("Note enregistrée.");
+}
+function edAddTask(){
+ const task=prompt("À traiter :"); if(!task)return;
+ const d=edLoad(); d.tasks.push({id:Date.now(),task,done:false,created:new Date().toISOString()}); edSave(d);
+ alert("Ajouté à À traiter.");
+}
+function edSearch(){
+ const q=(prompt("Recherche EasyDial :")||"").trim().toLowerCase(); if(!q)return;
+ const d=edLoad(), out=[];
+ d.contacts.forEach(x=>{if(JSON.stringify(x).toLowerCase().includes(q))out.push("👤 "+x.name+" "+(x.phone||"")+" "+(x.email||""))});
+ d.notes.forEach(x=>{if(JSON.stringify(x).toLowerCase().includes(q))out.push("📝 "+x.who+" : "+x.note)});
+ d.tasks.forEach(x=>{if(JSON.stringify(x).toLowerCase().includes(q))out.push("✓ "+x.task)});
+ alert(out.length?out.join("\n\n"):"Aucun résultat enregistré localement.");
+}
+function edPanel(){
+ const d=edLoad();
+ alert("Moteur local EasyDial V5\n\nContacts enregistrés : "+d.contacts.length+
+       "\nNotes : "+d.notes.length+"\nÀ traiter : "+d.tasks.filter(x=>!x.done).length+
+       "\n\nLes données restent sur ce téléphone.");
+}
+window.addEventListener("load",()=>{
+ const bar=document.createElement("div");
+ bar.id="ed-v5-tools";
+ bar.innerHTML='<button onclick="edAddContact()">＋ Contact</button><button onclick="edAddNote()">＋ Note</button><button onclick="edAddTask()">＋ À traiter</button><button onclick="edSearch()">⌕ Local</button><button onclick="edPanel()">V5</button>';
+ Object.assign(bar.style,{position:"fixed",left:"50%",transform:"translateX(-50%)",bottom:"74px",zIndex:"9999",display:"flex",gap:"5px",padding:"7px",borderRadius:"16px",background:"rgba(255,255,255,.96)",boxShadow:"0 5px 22px rgba(0,0,0,.18)",maxWidth:"96vw",overflowX:"auto"});
+ [...bar.querySelectorAll("button")].forEach(b=>Object.assign(b.style,{border:"0",borderRadius:"11px",padding:"9px 10px",fontWeight:"700",whiteSpace:"nowrap",background:"#eef4ff",color:"#14234d"}));
+ document.body.appendChild(bar);
+});
+</script>
+
+</body></html>
